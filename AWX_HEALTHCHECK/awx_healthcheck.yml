@@ -1,6 +1,21 @@
-- name: Ubuntu Linux Health Check
-  hosts: linux_servers
-  become: yes
+---
+- name: Check Memory and Storage on Ubuntu Server
+  hosts: all
+  gather_facts: yes
+ 
   tasks:
-    - name: Check uptime
-      command: uptime
+    - name: Show memory usage
+      ansible.builtin.shell: free -h
+      register: memory_usage
+ 
+    - name: Print memory usage
+      ansible.builtin.debug:
+        var: memory_usage.stdout_lines
+ 
+    - name: Show disk usage
+      ansible.builtin.shell: df -h
+      register: disk_usage
+ 
+    - name: Print disk usage
+      ansible.builtin.debug:
+        var: disk_usage.stdout_lines
