@@ -1,0 +1,30 @@
+---
+- name: AWX Application Health Check
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    awx_url: "http://localhost:8080/api/v2/ping/"
+
+  tasks:
+
+    - name: Check AWX API health endpoint
+      uri:
+        url: "{{ awx_url }}"
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: awx_response
+
+    - name: Display AWX version
+      debug:
+        msg: "AWX Version: {{ awx_response.json.version }}"
+
+    - name: Fail if AWX not healthy
+      fail:
+        msg: "AWX is not healthy!"
+      when: awx_response.status != 200
+
+    - name: Success message
+      debug:
+        msg: "AWX is healthy and reachable."
